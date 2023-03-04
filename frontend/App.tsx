@@ -5,9 +5,10 @@
  * @format
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -30,45 +31,54 @@ import { Camera, useCameraDevices } from 'react-native-vision-camera';
 
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   const devices = useCameraDevices('wide-angle-camera');
   const device = devices.back;
+  const camera = useRef<Camera>(null);
+  const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
 
-  if (device == null) return <></>;
+  if (device == null) return <>
+  <View>
+    <Text>No back camera found</Text>
+  </View>
+  </>;
 
   return (
-    <View>
+    // overlay a button on top of the camera
+
+    <View style={{flex: 1}}>
+     {currentPhoto && <Image 
+        source={{
+          uri: currentPhoto
+        }}
+      style={{flex: 1}} /> }
       <Camera
         style={StyleSheet.absoluteFill}
+        ref={camera}
+        photo={true}
         device={device}
         isActive={true}
+      />
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 100,
+          backgroundColor: 'blue',
+        }}
+        onPress={async () => {
+          const photo = await camera.current?.takePhoto({
+            flash: 'on',
+          });
+          // save the photo to camera roll
+          setCurrentPhoto(("file//" + photo?.path) ?? null);
+          console.log(photo?.path);
+        }}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
