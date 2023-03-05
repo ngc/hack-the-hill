@@ -202,6 +202,7 @@ export default function App() {
       const compressedImage = await compressImage(base64);
 
       console.log(compressedImage);
+      
       setCurrentPhoto(compressedImage as string);
       Vibration.vibrate(10);
     }
