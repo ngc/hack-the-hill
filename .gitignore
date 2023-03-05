@@ -1,2 +1,5 @@
 backend/hack-the-hill-379604-b06498d84388.json
 .DS_Store
+tts/output.mp3
+tts/serviceaccount.json
+tts/node_modules/
