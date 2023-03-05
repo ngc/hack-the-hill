@@ -1,6 +1,11 @@
 const rgbColors = require('./rgbColors')
-const keyPath = 'hack-the-hill-379604-b06498d84388.json';
+const sharp = require('sharp')
+const sizeOf = require('image-size')
+const path = require('path');
 
+
+
+const keyPath = 'hack-the-hill-379604-b06498d84388.json';
 
 function fetch_photo() {
   fetch('http://example.com/image', {
@@ -39,37 +44,28 @@ async function detectColors() {
     .catch(err => {
       console.error('ERROR:', err);
     });
-
 }
 
-// promise detectColors
-// async function detectColors() {
-//   const { ImageAnnotatorClient } = require('@google-cloud/vision');
-//   const client = new ImageAnnotatorClient({
-//     keyFilename: 'hack-the-hill-379604-b06498d84388.json',
-//   });
+// takes an image parameter, used in detectObjects
+async function detectColors(base64Image) {
+  const { ImageAnnotatorClient } = require('@google-cloud/vision');
+  const client = new ImageAnnotatorClient({
+    keyFilename: 'hack-the-hill-379604-b06498d84388.json',
+  });
 
-//   const fs = require('fs');
-//   const base64String = fs.readFileSync('IMG_5390.jpeg', 'base64');
+  client
+    .imageProperties({ image: { content: base64Image } })
+    .then(results => {
+      let colors = results[0].imagePropertiesAnnotation.dominantColors.colors;
+      console.log('Colors:');
+      colors.forEach(color => console.log(color));
+    })
+    .catch(err => {
+      console.error('ERROR:', err);
+    });
 
-//   return new Promise((resolve, reject) => {
-//     client
-//       .imageProperties({ image: { content: base64String } })
-//       .then(results => {
-//         let colors = results[0].imagePropertiesAnnotation.dominantColors.colors;
-//         // printing each color
-//         // console.log('Colors:');
-//         // colors.forEach(color => console.log(color));
-//         resolve(colors); // Return the colors variable
-//       })
-//       .catch(err => {
-//         console.error('ERROR:', err);
-//         reject(err); // Return the error
-//       });
-//   });
-// }
-
-
+    
+}
 
 // async function detectObjects() {
 //   const vision = require('@google-cloud/vision');
@@ -123,6 +119,12 @@ async function detectObjects() {
 
   const verticesArray = []; // create an empty array to store the vertices
 
+  const dimensions = sizeOf('/Users/myko/Desktop/hack-the-hill/backend/IMG_5390.jpeg')
+  const imagePath = path.join(__dirname, 'IMG_5390.jpeg');
+
+  console.log("DIMENSIONS")
+  console.log(dimensions.width, dimensions.height)
+
   objects.forEach(object => {
     console.log(`Name: ${object.name}`);
     console.log(`Score: ${object.score}`);
@@ -131,7 +133,8 @@ async function detectObjects() {
     // verticesArray.push(vertices); // push the vertices into the array
     vertices.forEach(v => console.log(`x: ${ v.x }`, `y: ${ v.y }`));
     console.log(vertices)
-    detectColorsInBox(imageUrl, vertices[0].x, vertices[0].y, vertices[3].x, vertices[3].y)
+    console.log(Math.floor(vertices[0].x * dimensions.width), Math.floor(vertices[0].y * dimensions.height), Math.floor(vertices[2].x * dimensions.width), Math.floor(vertices[2].y * dimensions.height))
+    detectColorsInBox(imagePath, Math.floor(vertices[0].x * dimensions.width), Math.floor(vertices[0].y * dimensions.height), Math.floor(vertices[2].x * dimensions.width), Math.floor(vertices[2].y * dimensions.height),key)
   });
 
   return 7; // return the array of vertices
@@ -162,30 +165,22 @@ async function detectTexts() {
   // return textAnnotations
 }
 
-async function detectColorsInBox(imageUrl, x1, y1, x2, y2) {
+async function detectColorsInBox(imageUrl, x1, y1, x2, y2, key) {
   const vision = require('@google-cloud/vision');
-  const axios = require('axios');
+  const sharp = require('sharp');
 
   // Load the service account key from a local file
   // const keyPath = 'hack-the-hill-379604-b06498d84388.json';
-  const key = require(keyPath);
+  // const key = require(keyPath);
 
   // Authenticate with the Vision API using the service account key
   const client = new vision.ImageAnnotatorClient({
     credentials: key
   });
 
-  // // Download the image using axios
-  // const response = await axios.get(imageUrl, {
-  //   responseType: 'arraybuffer'
-  // });
-
-  // Convert the response to a Buffer
-  // const buffer = Buffer.from(response.data, 'binary');
-
   // Crop the image to the specified bounding box
-  const image = await sharp(buffer)
-    .extract({ left: x1, top: y1, width: x2 - x1, height: y2 - y1 })
+  const image = await sharp(imageUrl)
+    .extract({ left:  Math.abs(x1), top: Math.abs(y1), width: Math.abs(x2 - x1), height: Math.abs(y2 - y1 )})
     .toBuffer();
 
   // Call detectColors with the cropped image
