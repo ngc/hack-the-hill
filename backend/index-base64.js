@@ -1,4 +1,5 @@
 const rgbColors = require('./rgbColors')
+const keyPath = 'hack-the-hill-379604-b06498d84388.json';
 
 
 function fetch_photo() {
@@ -106,7 +107,7 @@ async function detectObjects() {
   const fs = require('fs');
 
   // Load the service account key from a local file
-  const keyPath = 'hack-the-hill-379604-b06498d84388.json';
+  // const keyPath = 'hack-the-hill-379604-b06498d84388.json';
   const key = JSON.parse(fs.readFileSync(keyPath));
 
   // Authenticate with the Vision API using the service account key
@@ -127,11 +128,13 @@ async function detectObjects() {
     console.log(`Score: ${object.score}`);
     console.log(`Bounding Polygon: ${object.boundingPoly}`);
     const vertices = object.boundingPoly.normalizedVertices;
-    verticesArray.push(vertices); // push the vertices into the array
+    // verticesArray.push(vertices); // push the vertices into the array
     vertices.forEach(v => console.log(`x: ${ v.x }`, `y: ${ v.y }`));
+    console.log(vertices)
+    detectColorsInBox(imageUrl, vertices[0].x, vertices[0].y, vertices[3].x, vertices[3].y)
   });
 
-  return verticesArray; // return the array of vertices
+  return 7; // return the array of vertices
 }
 
 
@@ -141,7 +144,7 @@ async function detectTexts() {
   // const base64String = fs.readFileSync('IMG_5389.jpeg', 'base64');
 
   // Load the service account key from a local file
-  const keyPath = 'hack-the-hill-379604-b06498d84388.json';
+  // const keyPath = 'hack-the-hill-379604-b06498d84388.json';
   const key = JSON.parse(fs.readFileSync(keyPath));
 
   // Authenticate with the Vision API using the service account key
@@ -164,7 +167,7 @@ async function detectColorsInBox(imageUrl, x1, y1, x2, y2) {
   const axios = require('axios');
 
   // Load the service account key from a local file
-  const keyPath = 'hack-the-hill-379604-b06498d84388.json';
+  // const keyPath = 'hack-the-hill-379604-b06498d84388.json';
   const key = require(keyPath);
 
   // Authenticate with the Vision API using the service account key
@@ -172,13 +175,13 @@ async function detectColorsInBox(imageUrl, x1, y1, x2, y2) {
     credentials: key
   });
 
-  // Download the image using axios
-  const response = await axios.get(imageUrl, {
-    responseType: 'arraybuffer'
-  });
+  // // Download the image using axios
+  // const response = await axios.get(imageUrl, {
+  //   responseType: 'arraybuffer'
+  // });
 
   // Convert the response to a Buffer
-  const buffer = Buffer.from(response.data, 'binary');
+  // const buffer = Buffer.from(response.data, 'binary');
 
   // Crop the image to the specified bounding box
   const image = await sharp(buffer)
@@ -188,7 +191,7 @@ async function detectColorsInBox(imageUrl, x1, y1, x2, y2) {
   // Call detectColors with the cropped image
   const colors = await detectColors(image);
   console.log(`Colors in box (${x1}, ${y1}) - (${x2}, ${y2}):`, colors);
-  return colors;
+  // return colors;
 }
 
 // let colorsArr;
