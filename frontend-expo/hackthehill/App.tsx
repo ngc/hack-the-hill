@@ -2,7 +2,7 @@ import { Camera, CameraType } from 'expo-camera';
 import React, { Component, Ref, useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Animated } from 'react-native';
 import * as ImageManipulator from 'expo-image-manipulator';
-import Svg, { Circle, G, Mask, Path, Rect } from 'react-native-svg';
+import Svg, { Circle, Defs, G, Mask, Path, Rect } from 'react-native-svg';
 import { Vibration } from 'react-native';
 
 class AnimatedCircles extends Component {
@@ -149,8 +149,9 @@ const Overlay = (props: {
 };
 
 const CrosshairSVG = () => {
+  return(
   <Svg width="199" height="199" viewBox="0 0 199 199" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <Mask id="mask0_3_32" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="-24" y="0" width="246" height="199">
+  <Mask id="mask0_3_32" maskUnits="userSpaceOnUse" x="-24" y="0" width="246" height="199">
   <Path d="M39 0H156V94H39V0Z" fill="#D9D9D9"/>
   <Path d="M-24 47H93V141H-24V47Z" fill="#D9D9D9"/>
   <Path d="M105 47H222V141H105V47Z" fill="#D9D9D9"/>
@@ -160,7 +161,7 @@ const CrosshairSVG = () => {
   <Path d="M97.08 14H100.5V185H97.08V14Z" fill="#E8ED00"/>
   <Path d="M15 101.21L15 97.79L186 97.79V101.21L15 101.21Z" fill="#E8ED00"/>
   </G>
-</Svg>
+</Svg>);
 }
 
 export default function App() {
@@ -170,6 +171,9 @@ export default function App() {
   const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
   const [detectedColor, setDetectedColor] = useState<string | null>("Red");
   const isLoading = false;
+
+  console.log("app loaded");
+  
 
   async function convertURIToBase64Image (uri: string) {
     // take the uri from a file and convert it to a base64 image
@@ -196,6 +200,7 @@ export default function App() {
   }
 
   async function takePicture() {
+    console.log("$$$ Taking picture");
     if (camera.current) {
       const photo = await camera.current.takePictureAsync();
       const base64 = (await convertURIToBase64Image(photo.uri)) as string;
@@ -204,13 +209,20 @@ export default function App() {
       console.log(compressedImage);
       
       setCurrentPhoto(compressedImage as string);
-      Vibration.vibrate(10);
+      // Vibration.vibrate(10);
     }
   }
 
-  // useEffect(() => {
-  //   takePicture();
-  // }, [currentPhoto]);
+  useEffect(() => {
+
+    const take = async () => {
+      // sleep for 5 seconds
+      await new Promise((resolve) => setTimeout(resolve, 1000 * 60));
+      takePicture();
+    }
+
+    take();
+  }, [currentPhoto]);
 
   if (!permission) {
     return <Button title="Request Permission" onPress={requestPermission} />;
@@ -232,6 +244,8 @@ export default function App() {
     </View>;
   }
 
+
+
   return (
     <View style={styles.container}>
 
@@ -243,11 +257,26 @@ export default function App() {
         ref={camera}
       >
         <View style={styles.container}>
-          <TouchableOpacity onPress={takePicture}>
+          <TouchableOpacity 
+          style={
+            {
+              zIndex: 10,
+            }
+          }
+          
+          hitSlop={
+            {
+              top: 50,
+              bottom: 50,
+              left: 50,
+              right: 50,
+            }
+          }
+          onPress={() => {
+            console.log("$$$ Taking picture");
+            void takePicture();
+            }}>
             <CrosshairSVG/>
-
-
-
           </TouchableOpacity>
         </View>
       </Camera>
