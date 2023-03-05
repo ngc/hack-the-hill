@@ -5,7 +5,7 @@ const sharp = require('sharp');
 const sizeOf = require('image-size');
 const path = require('path');
 
-const colorsArr = {
+export const colorsArr = {
   maroon: [128, 0, 0],
   'dark red': [139, 0, 0],
   brown: [165, 42, 42],
@@ -313,7 +313,7 @@ async function detectColors(base64Image) {
 // }
 
 // DETECT OBJECTS WITH BASE64STRING
-async function detectObjects(base64String) {
+export default async function detectObjects(base64String) {
   const vision = require('@google-cloud/vision');
   const fs = require('fs');
   const sharp = require('sharp');
@@ -473,7 +473,7 @@ async function run() {
   try {
     const fs = require('fs');
     const base64String = fs.readFileSync(
-      '/Users/myko/Desktop/hack-the-hill/backend/redbull.jpg',
+      '/Users/myko/Desktop/hack-the-hill/backend/pictures/kettcorn.jpg',
       'base64'
     );
 
