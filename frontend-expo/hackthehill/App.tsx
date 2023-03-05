@@ -148,6 +148,21 @@ const Overlay = (props: {
   );
 };
 
+const CrosshairSVG = () => {
+  <Svg width="199" height="199" viewBox="0 0 199 199" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <Mask id="mask0_3_32" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="-24" y="0" width="246" height="199">
+  <Path d="M39 0H156V94H39V0Z" fill="#D9D9D9"/>
+  <Path d="M-24 47H93V141H-24V47Z" fill="#D9D9D9"/>
+  <Path d="M105 47H222V141H105V47Z" fill="#D9D9D9"/>
+  <Path d="M62 105H179V199H62V105Z" fill="#D9D9D9"/>
+  </Mask>
+  <G mask="url(#mask0_3_32)">
+  <Path d="M97.08 14H100.5V185H97.08V14Z" fill="#E8ED00"/>
+  <Path d="M15 101.21L15 97.79L186 97.79V101.21L15 101.21Z" fill="#E8ED00"/>
+  </G>
+</Svg>
+}
+
 export default function App() {
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
@@ -155,10 +170,6 @@ export default function App() {
   const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
   const [detectedColor, setDetectedColor] = useState<string | null>("Red");
   const isLoading = false;
-  
-  function toggleCameraType() {
-    setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
-  }
 
   async function convertURIToBase64Image (uri: string) {
     // take the uri from a file and convert it to a base64 image
@@ -232,23 +243,9 @@ export default function App() {
       >
         <View style={styles.container}>
           <TouchableOpacity onPress={takePicture}>
-            {/* <Image
-              source={require('./assets/Vector.png')}
-              style={{ width: 100, height: 100 }}
-            /> */}
+            <CrosshairSVG/>
 
-            <Svg width="199" height="199" viewBox="0 0 199 199" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <Mask id="mask0_3_32" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="-24" y="0" width="246" height="199">
-              <Path d="M39 0H156V94H39V0Z" fill="#D9D9D9"/>
-              <Path d="M-24 47H93V141H-24V47Z" fill="#D9D9D9"/>
-              <Path d="M105 47H222V141H105V47Z" fill="#D9D9D9"/>
-              <Path d="M62 105H179V199H62V105Z" fill="#D9D9D9"/>
-              </Mask>
-              <G mask="url(#mask0_3_32)">
-              <Path d="M97.08 14H100.5V185H97.08V14Z" fill="#E8ED00"/>
-              <Path d="M15 101.21L15 97.79L186 97.79V101.21L15 101.21Z" fill="#E8ED00"/>
-              </G>
-            </Svg>
+
 
           </TouchableOpacity>
         </View>
