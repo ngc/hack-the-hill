@@ -145,15 +145,12 @@ function nearestColor(colors, color) {
         closestDistance = distance;
       }
     }
-  
     console.log(closestColor);
   }
 
-  module.exports = {
-    colorsArr,
-    nearestColor
-  }
-
+  // module.exports = {
+  //   colorsArr,
+  //   nearestColor
+  // }
   
-  
-  // nearestColor(colors, [135, 200, 230]);
+  nearestColor(colorsArr, [244, 164, 96]);
