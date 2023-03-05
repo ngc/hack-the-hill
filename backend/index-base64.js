@@ -1,3 +1,6 @@
+const rgbColors = require('./rgbColors')
+
+
 function fetch_photo() {
   fetch('http://example.com/image', {
     method: 'GET',
@@ -14,12 +17,13 @@ function fetch_photo() {
     })
     .catch(error => console.error(error));
 }
-
-async function newFunction() {
+// detectColors
+async function detectColors() {
   const { ImageAnnotatorClient } = require('@google-cloud/vision');
   const client = new ImageAnnotatorClient({
     keyFilename: 'hack-the-hill-379604-b06498d84388.json',
   });
+
 
   const fs = require('fs');
   const base64String = fs.readFileSync('IMG_5390.jpeg', 'base64');
@@ -27,14 +31,43 @@ async function newFunction() {
   client
     .imageProperties({ image: { content: base64String } })
     .then(results => {
-      const colors = results[0].imagePropertiesAnnotation.dominantColors.colors;
+      let colors = results[0].imagePropertiesAnnotation.dominantColors.colors;
       console.log('Colors:');
       colors.forEach(color => console.log(color));
     })
     .catch(err => {
       console.error('ERROR:', err);
     });
+
 }
+
+// promise detectColors
+// async function detectColors() {
+//   const { ImageAnnotatorClient } = require('@google-cloud/vision');
+//   const client = new ImageAnnotatorClient({
+//     keyFilename: 'hack-the-hill-379604-b06498d84388.json',
+//   });
+
+//   const fs = require('fs');
+//   const base64String = fs.readFileSync('IMG_5390.jpeg', 'base64');
+
+//   return new Promise((resolve, reject) => {
+//     client
+//       .imageProperties({ image: { content: base64String } })
+//       .then(results => {
+//         let colors = results[0].imagePropertiesAnnotation.dominantColors.colors;
+//         // printing each color
+//         // console.log('Colors:');
+//         // colors.forEach(color => console.log(color));
+//         resolve(colors); // Return the colors variable
+//       })
+//       .catch(err => {
+//         console.error('ERROR:', err);
+//         reject(err); // Return the error
+//       });
+//   });
+// }
+
 
 
 async function detectObjects() {
@@ -63,6 +96,8 @@ async function detectObjects() {
     const veritices = object.boundingPoly.normalizedVertices;
     veritices.forEach(v => console.log(`x: ${ v.x }`, `y: ${ v.y }`));
   });
+
+  // return objects
 }
 
 async function detectTexts() {
@@ -85,9 +120,32 @@ async function detectTexts() {
   const detections = result.textAnnotations;
   console.log('Text:');
   detections.forEach(text => console.log(text));;
+
+  // return textAnnotations
 }
 
-detectObjects();
-detectTexts();
-newFunction();
+let colorsArr;
+let colorsWordsArr = [];
+
+
+// dont think i need this...
+// detectColors().then(colors => {
+//   colorsArr = colors;
+//   console.log('colorsArr is')
+//   console.log(colorsArr)
+
+//   colorsWordsArr = colorsArr.map(color => [
+//     color.color.red,
+//     color.color.green,
+//     color.color.blue
+//   ])
+
+//   console.log('colorsWordsArr is')
+//   console.log(colorsWordsArr)
+
+// });
+
+// detectObjects();
+// detectTexts();
+
 

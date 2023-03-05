@@ -1,4 +1,4 @@
-const colors = {
+const colorsArr = {
     "maroon": [128, 0, 0],
     "dark red": [139, 0, 0],
     "brown": [165, 42, 42],
@@ -149,4 +149,11 @@ function nearestColor(colors, color) {
     console.log(closestColor);
   }
 
-  nearestColor(colors, [253, 250, 231]);
+  module.exports = {
+    colorsArr,
+    nearestColor
+  }
+
+  
+  
+  // nearestColor(colors, [135, 200, 230]);
